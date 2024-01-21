@@ -6,49 +6,39 @@ import time
 os.environ["PYGAME_HIDE_SUPPORT_PROMPT"] = "1"
 import pygame
 
-size = 1000
-pixel_size = 2
-edges = []
-primes = []
-pixel_positions = []
+SIZE = 1000
+PIXEL_SIZE = 2
 
 
-# rechts x+
-# links x-
-# runter y+
-# hoch y-
-
-
-def get_next_pixel(x, y, direction, edges):
+def get_next_pixel(x: int, y: int, direction: str, edges: list) -> tuple:
     if direction == "right":
-        x += pixel_size
+        x += PIXEL_SIZE
         if x > edges[1]:
             direction = "up"
             edges[1] = x
     elif direction == "left":
-        x -= pixel_size
+        x -= PIXEL_SIZE
         if x < edges[0]:
             direction = "down"
             edges[0] = x
     elif direction == "down":
-        y += pixel_size
+        y += PIXEL_SIZE
         if y > edges[3]:
             direction = "right"
             edges[3] = y
     elif direction == "up":
-        y -= pixel_size
+        y -= PIXEL_SIZE
         if y < edges[2]:
             direction = "left"
             edges[2] = y
     return (x, y), direction, edges
 
 
-def fill_pixel_positions():
+def fill_pixel_positions() -> list:
     direction = "right"
-    x, y = size // 2, size // 2
+    x, y = SIZE // 2, SIZE // 2
     edges = [x, x, y, y]
-    total_pixels = size * size // (pixel_size * pixel_size)
-    global pixel_positions
+    total_pixels = SIZE * SIZE // (PIXEL_SIZE * PIXEL_SIZE)
     pixel_positions = [(x, y)]
     start = timeit.default_timer()
     for i in range(total_pixels):
@@ -56,9 +46,10 @@ def fill_pixel_positions():
         pixel_positions.append(next_pixel)
         x, y = next_pixel
     print(f"Time taken to fill pixel positions: {timeit.default_timer() - start}")
+    return pixel_positions
 
 
-def is_prime(n):
+def is_prime(n: int) -> bool:
     if n == 2:
         return True
     if n % 2 == 0:
@@ -69,38 +60,33 @@ def is_prime(n):
     return True
 
 
-def fill_primes():
-    global size, primes
-    max_number = size * size
+def fill_primes() -> list:
+    global SIZE
+    max_number = SIZE * SIZE
     start = timeit.default_timer()
     primes = [i for i in range(2, max_number - 1) if is_prime(i)]
     print(f"Time taken to fill primes: {timeit.default_timer() - start}")
+    return primes
 
 
-# Initialize Pygame
 pygame.init()
 pygame.display.set_caption("Ulam Spiral")
-# Set the dimensions of the window
-screen = pygame.display.set_mode((size, size))
+screen = pygame.display.set_mode((SIZE, SIZE))
 
-fill_primes()
-fill_pixel_positions()
+primes = fill_primes()
+pixel_positions = fill_pixel_positions()
 
-# Set the color
+
 red = (255, 0, 0)
 green = (0, 255, 0)
 
-screen.fill((0, 0, 0))
+# Draw the first pixel
 pygame.draw.rect(
-    screen, red, (pixel_positions[0][0], pixel_positions[0][1], pixel_size, pixel_size)
+    screen, red, (pixel_positions[0][0], pixel_positions[0][1], PIXEL_SIZE, PIXEL_SIZE)
 )
 pygame.display.update()
 
-
-# Keep the window open until it is closed
-
 done = False
-
 index = 0
 while True:
     for event in pygame.event.get():
@@ -115,6 +101,6 @@ while True:
             print("Done")
         else:
             x, y = pixel_positions[index_positions - 1]
-            pygame.draw.rect(screen, green, (x, y, pixel_size, pixel_size))
+            pygame.draw.rect(screen, green, (x, y, PIXEL_SIZE, PIXEL_SIZE))
             pygame.display.update()
             index += 1
