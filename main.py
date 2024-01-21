@@ -79,7 +79,7 @@ def fill_primes():
 
 # Initialize Pygame
 pygame.init()
-
+pygame.display.set_caption("Ulam Spiral")
 # Set the dimensions of the window
 screen = pygame.display.set_mode((size, size))
 
